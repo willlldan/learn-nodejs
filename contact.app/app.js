@@ -3,28 +3,71 @@
 const yargs = require("yargs");
 const contacts = require("./contacts");
 
+yargs
+  .command({
+    command: "add",
+    describe: "Add new contact",
+    builder: {
+      name: {
+        describe: "Nama Lengkap",
+        demandOption: true,
+        type: "string",
+      },
+      email: {
+        describe: "Email",
+        demandOption: false,
+        type: "string",
+      },
+      noHp: {
+        describe: "No Hp",
+        demandOption: true,
+        type: "string",
+      },
+    },
+    handler(argv) {
+      contacts.save(argv.name, argv.email, argv.noHp);
+    },
+  })
+  .demandCommand();
+
+// show all list name & number phone of contact
 yargs.command({
-  command: "add",
-  describe: "Add new contact",
+  command: "list",
+  describe: "show all list name & number phone",
+  handler() {
+    contacts.show();
+  },
+});
+
+// Get detail contact
+yargs.command({
+  command: "detail",
+  describe: "show detail of contacts",
   builder: {
-    nama: {
+    name: {
       describe: "Nama Lengkap",
-      demandOption: true,
-      type: "string",
-    },
-    email: {
-      describe: "Email",
-      demandOption: false,
-      type: "string",
-    },
-    noHp: {
-      describe: "No Hp",
       demandOption: true,
       type: "string",
     },
   },
   handler(argv) {
-    contacts.save(argv.nama, argv.email, argv.noHp);
+    contacts.detail(argv.name);
+  },
+});
+
+// delete detail by name
+yargs.command({
+  command: "delete",
+  describe: "delete contact",
+  builder: {
+    name: {
+      describe: "Nama Lengkap",
+      demandOption: true,
+      type: "string",
+    },
+  },
+  handler(argv) {
+    contacts.deleteContact(argv.name);
   },
 });
 

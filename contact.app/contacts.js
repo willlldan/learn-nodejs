@@ -15,10 +15,17 @@ if (!fs.existsSync(dataPath)) {
   fs.writeFileSync(dataPath, "[]", "utf-8");
 }
 
-const save = (name, email, noHp) => {
-  const contact = { name, email, noHp };
+// get file
+const loadContact = () => {
   const file = fs.readFileSync("data/contacts.json", "utf-8");
   const contacts = JSON.parse(file);
+
+  return contacts;
+};
+
+const save = (name, email, noHp) => {
+  const contact = { name, email, noHp };
+  const contacts = loadContact();
 
   // Cek duplikasi
   const duplicate = contacts.find((contact) => contact.name === name);
@@ -48,4 +55,48 @@ const save = (name, email, noHp) => {
   console.log(chalk.green.inverse.bold("Terimakasih telah menginputkan data"));
 };
 
-module.exports = { save };
+// show all
+const show = () => {
+  const contacts = loadContact();
+  console.log(chalk.cyan.inverse.bold("Daftar Contact"));
+  contacts.forEach((contact, i) => {
+    console.log(`${i + 1}. ${contact.name} - ${contact.noHp} `);
+  });
+};
+
+// get detail
+const detail = (name) => {
+  const contacts = loadContact();
+
+  const contact = contacts.find(
+    (contact) => contact.name.toLowerCase() === name.toLowerCase()
+  );
+
+  if (!contact) {
+    console.log(chalk.red.inverse.bold(`Nama ${name} tidak ditemukan`));
+    return false;
+  }
+
+  console.log(chalk.cyan.inverse.bold(contact.name));
+  console.log(contact.noHp);
+  console.log(contact.email ? contact.noHp : "");
+};
+
+// delete contact
+const deleteContact = (name) => {
+  const contacts = loadContact();
+  const newContacts = contacts.filter(
+    (contact) => contact.name.toLowerCase() !== name.toLowerCase()
+  );
+
+  if (contacts.length === newContacts.length) {
+    console.log(chalk.red.inverse.bold(`Nama ${name} tidak ditemukan`));
+    return false;
+  }
+
+  fs.writeFileSync("data/contacts.json", JSON.stringify(newContacts, null, 2));
+
+  console.log(chalk.green.inverse.bold(`${name} berhasil dihapus`));
+};
+
+module.exports = { save, show, detail, deleteContact };
